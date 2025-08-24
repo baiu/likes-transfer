@@ -11,6 +11,20 @@ import com.vk.api.sdk.queries.newsfeed.NewsfeedGetQuery;
 
 public class VKNewsfeedLikesTransfer {
 
+    public static void transferLikes(VkApiClient vk, UserActor sourceActor,
+                                     UserActor targetActor, int targetOwnerId)
+            throws ApiException, ClientException {
+        NewsfeedGetQuery newsfeedGetQuery = vk.newsfeed().get(sourceActor);
+        newsfeedGetQuery.section("likes");
+        GetResponse response = newsfeedGetQuery.execute();
+        for (NewsfeedNewsfeedItemOneOf item : response.getItems()) {
+            FaveAddPostQuery addPostQuery =
+                    vk.fave().addPost(targetActor, targetOwnerId,
+                            item.getOneOf0().getPostId());
+            addPostQuery.execute();
+        }
+    }
+
         public static void main(String[] args) {
             TransportClient transportClient = new HttpTransportClient();
             VkApiClient vk = new VkApiClient(transportClient);
